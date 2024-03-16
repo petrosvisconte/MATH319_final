@@ -35,25 +35,52 @@ class Var:
             new_val = other ** self.val
             new_der = new_val * math.log(other) * self.der
             return Var(new_val, new_der)
+    def __neg__(self):
+        return Var(-self.val, -self.der)
+    def __sub__(self,other):
+        if isinstance(other, self.__class__):
+            return Var(self.val - other.val, self.der - other.der)
+        else:
+            return Var(self.val - other, self.der)
+    def __rsub__(self,other):
+        if isinstance(other, self.__class__):
+            return Var(other.val - self.val, other.der - self.der)
+        else:
+            return Var(other - self.val, -self.der)
+    def __truediv__(self,other):
+        if isinstance(other, self.__class__):
+            new_val = self.val/other.val
+            new_der = (self.der*other.val - self.val*other.der)/(other.val**2)
+            return Var(new_val, new_der)
+        else:
+            return Var(self.val/other, self.der/other)
+    def __rtruediv__(self,other):
+        if isinstance(other, self.__class__):
+            new_val = other.val/self.val
+            new_der = (other.der*self.val - other.val*self.der)/(self.val**2)
+            return Var(new_val, new_der)
+        else:
+            return Var(other/self.val, -other*self.der/(self.val ** 2))
+        
         
     __radd__ = __add__
     __rmul__ = __mul__
         
             
 
-def neg(var):
-    return Var(var.val, -var.der)
+#def neg(var):
+#    return Var(-var.val, -var.der)
 
 #def c(k, var):
 #    return Var(var.val, k*var.der)
 
-def sum(vars):
-    deriv = 0
-    value = 0
-    for i in vars:
-        deriv += i.der
-        value += i.val
-    return Var(value, deriv)
+#def sum(vars):
+#    deriv = 0
+#    value = 0
+#    for i in vars:
+#        deriv += i.der
+#        value += i.val
+#    return Var(value, deriv)
 
 #def product(vars):
 #    deriv = 0
@@ -121,7 +148,9 @@ def cos(var):
 def funct(x,y):
     #f1 = (y+neg(x**2))**2 + (1+ neg(x))**2
     #f1 = sum((pow(2,y), c(2,neg(product((y, pow(2,x))))), pow(4,x), neg(c(2,x)), pow(2,x)))
-    f1 = sum((y**2, 2*neg(y * x**2), x**4, neg(2*x), x**2))
+    #f1 = sum([y**2 - 2*(y * x**2) + x**4 -(2*x) + x**2])
+    #f1 = y**2 - 2*(y * x**2) + x**4 -(2*x) + x**2
+    f1 = (y-x**2)**2 + (1-x)**2
     return f1 
 
 def compute_grad(vars):
