@@ -3,16 +3,102 @@ title: "MATH319Final"
 output: html_notebook
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
-
 ```{r}
-plot(cars)
+library(reticulate)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+Importing python code
+```{r}
+auto_diff <- reticulate::import("forward_auto_diff")
+```
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+Defining parameters
+```{r}
+x0 <- c(1.2, 1.2)
+c1 <- 0.4
+rho <- 0.8
+tol <- 0.000001
+iter <- 500
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```
+
+Creating functions
+```{r}
+# rosenbrock function
+rosenbrock <- function(x1, x2) {
+  out <- (x2-x1^2)^2 + (1-x1)^2
+  return(out)
+}
+
+# rosenbrock function
+rosenbrock2 <- function(x1, x2) {
+  out <- cos(x1)*sin(x2)+x1*x1
+  return(out)
+}
+```
+
+Steepest descent
+```{r}
+# make a contour plot
+x1 <- seq(0.9, 1.3, length.out=100)
+x2 <- x1
+z <- outer(x1, x2,FUN=rosenbrock)
+plot_contour <- contour(x1, x2, z, nlevels=50, 
+                        main="Contour Plot of Rosenbrock Function - Steepest Descent")
+  
+# steepest descent function
+steepest_descent <- function(func, x0) {
+  # plot initial point x0
+  points(x0[1], x0[2], col="blue", pch=16)
+  
+  # initialize variables 
+  xk <- x0
+  ####### computing gradient from auto_diff ########
+  var1 <- auto_diff$Var(xk[1], 0)
+  var2 <- auto_diff$Var(xk[2], 0)
+  grad <- auto_diff$compute_grad(c(var1, var2))
+  #################################################
+  norm_g <- norm(c(grad[1], grad[2]), type="2")
+  count <- 0
+  
+  # algorithm logic
+  while(count < iter && norm_g > tol) {
+    a <- 1
+    pk <- -grad
+    # initialize step length variables
+    x_ap <- xk + a*pk
+    wolfe = func(x_ap[1], x_ap[2]) < 
+            (func(xk[1], xk[2]) + c1*a*t(grad)%*%pk) 
+    # compute step length based on first Wolfe condition
+    while (!wolfe) {
+      # update step length
+      a <- rho*a
+      # update wolfe condition
+      x_ap <- xk + a*pk
+      wolfe = func(x_ap[1], x_ap[2]) < 
+              (func(xk[1], xk[2]) + c1*a*t(grad)%*%pk)
+    }
+    # update iterate and norm
+    xk_o <- xk
+    xk <- xk + a*pk
+    ####### computing gradient from auto_diff ########
+    var1 <- auto_diff$Var(xk[1], 0)
+    var2 <- auto_diff$Var(xk[2], 0)
+    grad <- auto_diff$compute_grad(c(var1, var2))
+    #################################################
+    norm_g <- norm(c(grad[1], grad[2]), type="2")
+    count <-  count + 1
+    # plot iterate
+    points(xk[1], xk[2])
+    segments(xk_o[1], xk_o[2], xk[1], xk[2])
+  }
+  
+  cat("Iterations: ", count, "\n")
+  cat("Optimal value: ", xk)
+}
+
+steepest_descent(rosenbrock, x0)
+# plot optimal solution
+points(1,1, col="green", pch=16)
+```
+
