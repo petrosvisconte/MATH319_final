@@ -98,10 +98,11 @@ steepest_descent <- function(func, x0, identity) {
 # make a contour plot
 x1 <- seq(0.9, 1.3, length.out=100)
 x2 <- x1
-z <- outer(x1, x2,FUN=rosenbrock)
+g <- Vectorize(auto_diff$funct)
+z <- outer(x1, x2,FUN=g)
 plot_contour <- contour(x1, x2, z, nlevels=50, 
                         main="Contour Plot of Rosenbrock Function - Steepest Descent")
-steepest_descent(rosenbrock, x0, 1)
+steepest_descent(g, x0, 1)
 # plot optimal solution
 points(1,1, col="green", pch=16)
 ```
@@ -117,12 +118,12 @@ plot_contour <- contour(x1, x2, z, nlevels=50,
                         main="Contour Plot of Function A4 - Steepest Descent")
 
 # perform steepest descent with various starting points
-steepest_descent(function_a4, c(0, 6.1), 2)
-steepest_descent(function_a4, c(0, 5.9), 2)
-steepest_descent(function_a4, c(6.5, 13), 2)
+steepest_descent(g, c(0, 6.1), 2)
+steepest_descent(g, c(0, 5.9), 2)
+steepest_descent(g, c(6.5, 13), 2)
 # find the function value for each optimal solution found
-function_a4(-3.141592, 12.275)
-function_a4(3.141593, 2.275)
-function_a4(9.424778, 2.475)
+g(-3.141592, 12.275)
+g(3.141593, 2.275)
+g(9.424778, 2.475)
 points(-10,-10) # used to display plot as final output
 ```
