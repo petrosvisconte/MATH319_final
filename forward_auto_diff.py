@@ -2,6 +2,7 @@
 
 import math
 
+pi = math.pi
 
 class Var:
     def __init__(self, val, der):
