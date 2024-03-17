@@ -81,8 +81,10 @@ def sin(var):
             deriv += deriv_part * math.cos(inner_value)
             val *= math.sin(var[j].val)
         return Var(val, deriv)
-    else:
+    if isinstance(var,Var(0,0).__class__):
         return Var(math.sin(var.val), var.der * math.cos(var.val))
+    else:
+        return math.sin(var)
 
 def cos(var):
     if isinstance(var, tuple):
@@ -98,8 +100,10 @@ def cos(var):
             deriv -= deriv_part * math.sin(inner_value)
             val *= math.cos(var[j].val)
         return Var(val, -deriv)
-    else:
+    if isinstance(var,Var(0,0).__class__):
         return Var(math.cos(var.val), -var.der * math.sin(var.val))
+    else:
+        return math.cos(var)
 
 def funct(x,y):
     #f1 = (y+neg(x**2))**2 + (1+ neg(x))**2

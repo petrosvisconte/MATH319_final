@@ -111,7 +111,8 @@ points(1,1, col="green", pch=16)
 # make a contour plot
 x1 <- seq(-5, 15, length.out=100)
 x2 <- x1
-z <- outer(x1, x2,FUN=function_a4)
+g <- Vectorize(auto_diff$funct_a4)
+z <- outer(x1, x2,FUN=g)
 plot_contour <- contour(x1, x2, z, nlevels=50, 
                         main="Contour Plot of Function A4 - Steepest Descent")
 
