@@ -67,35 +67,6 @@ class Var:
     __radd__ = __add__
     __rmul__ = __mul__
         
-            
-
-#def neg(var):
-#    return Var(-var.val, -var.der)
-
-#def c(k, var):
-#    return Var(var.val, k*var.der)
-
-#def sum(vars):
-#    deriv = 0
-#    value = 0
-#    for i in vars:
-#        deriv += i.der
-#        value += i.val
-#    return Var(value, deriv)
-
-#def product(vars):
-#    deriv = 0
-#    if len(vars) == 0:
-#        return Var(1, 0)
-#    value = math.prod(var.val for var in vars)
-#    for i in range(len(vars)):
-#        deriv_part = vars[i].der
-#        for j in range(len(vars)):
-#            if i != j:
-#                deriv_part *= vars[j].val
-#        deriv += deriv_part
-#    return Var(value, deriv)
-
 def sin(var):
     if isinstance(var, tuple):
         deriv = 0
@@ -129,22 +100,6 @@ def cos(var):
         return Var(val, -deriv)
     else:
         return Var(math.cos(var.val), -var.der * math.sin(var.val))
-
-#def pow(n, var):
-#    if isinstance(var, tuple):
-#        deriv = 0
-#        val = 1
-#        for i in range(len(var)):
-#            inner_value = var[i].val
-#            for j in range(len(var)):
-#                if i != j:
-#                    inner_value *= var[j].val
-#            deriv += var[i].der * n * math.pow(inner_value, n - 1)
-#            val *= math.pow(var[j].val, n)
-#        return Var(val, deriv)
-#    else:
-#        return Var(math.pow(var.val, n), var.der * n * math.pow(var.val, n - 1))
-
 
 def funct(x,y):
     #f1 = (y+neg(x**2))**2 + (1+ neg(x))**2

@@ -4,7 +4,7 @@ output: html_notebook
 ---
 
 ```{r}
-library(reticulate)
+suppressWarnings(library(reticulate))
 ```
 
 ### Importing python code
