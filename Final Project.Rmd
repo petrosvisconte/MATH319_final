@@ -12,6 +12,27 @@ suppressWarnings(library(reticulate))
 auto_diff <- reticulate::import("forward_auto_diff")
 ```
 
+#### Python code snippit
+```{python eval=FALSE}
+  def sin(var):
+    if isinstance(var, tuple):
+        deriv = 0
+        val = 1
+        for i in range(len(var)):
+            deriv_part = var[i].der
+            inner_value = var[i].val
+            for j in range(len(var)):
+                if i != j:
+                    deriv_part *= var[j].val
+                    inner_value *= var[j].val
+            deriv += deriv_part * math.cos(inner_value)
+            val *= math.sin(var[j].val)
+        return Var(val, deriv)
+    else:
+        return Var(math.sin(var.val), var.der * math.cos(var.val))
+```
+
+
 ### Defining parameters
 ```{r}
 x0 <- c(1.2, 1.2)
