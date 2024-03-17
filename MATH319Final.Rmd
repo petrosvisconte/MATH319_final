@@ -7,12 +7,12 @@ output: html_notebook
 library(reticulate)
 ```
 
-Importing python code
+### Importing python code
 ```{r}
 auto_diff <- reticulate::import("forward_auto_diff")
 ```
 
-Defining parameters
+### Defining parameters
 ```{r}
 x0 <- c(1.2, 1.2)
 c1 <- 0.4
@@ -22,7 +22,7 @@ iter <- 500
 
 ```
 
-Creating functions
+### Creating functions
 ```{r}
 # rosenbrock function
 rosenbrock <- function(x1, x2) {
@@ -30,24 +30,17 @@ rosenbrock <- function(x1, x2) {
   return(out)
 }
 
-# rosenbrock function
-rosenbrock2 <- function(x1, x2) {
-  out <- cos(x1)*sin(x2)+x1*x1
+# function from Assignment 4
+function_a4 <- function(x1, x2) {
+  out <- (x2 - (5.1*x1^2)/(4*pi^2) + (5*x1)/pi - 6)^2 + 10*(1 - 1/(8*pi))*cos(x1) + 10
   return(out)
 }
 ```
 
-Steepest descent
+### Steepest descent algorithm with forward auto diff
 ```{r}
-# make a contour plot
-x1 <- seq(0.9, 1.3, length.out=100)
-x2 <- x1
-z <- outer(x1, x2,FUN=rosenbrock)
-plot_contour <- contour(x1, x2, z, nlevels=50, 
-                        main="Contour Plot of Rosenbrock Function - Steepest Descent")
-  
 # steepest descent function
-steepest_descent <- function(func, x0) {
+steepest_descent <- function(func, x0, identity) {
   # plot initial point x0
   points(x0[1], x0[2], col="blue", pch=16)
   
@@ -56,7 +49,8 @@ steepest_descent <- function(func, x0) {
   ####### computing gradient from auto_diff ########
   var1 <- auto_diff$Var(xk[1], 0)
   var2 <- auto_diff$Var(xk[2], 0)
-  grad <- auto_diff$compute_grad(c(var1, var2))
+  if (identity == 1) {grad <- auto_diff$compute_grad(c(var1, var2))}
+  else {grad <- auto_diff$compute_grad_a4(c(var1, var2))}
   #################################################
   norm_g <- norm(c(grad[1], grad[2]), type="2")
   count <- 0
@@ -84,7 +78,8 @@ steepest_descent <- function(func, x0) {
     ####### computing gradient from auto_diff ########
     var1 <- auto_diff$Var(xk[1], 0)
     var2 <- auto_diff$Var(xk[2], 0)
-    grad <- auto_diff$compute_grad(c(var1, var2))
+    if (identity == 1) {grad <- auto_diff$compute_grad(c(var1, var2))}
+    else {grad <- auto_diff$compute_grad_a4(c(var1, var2))}
     #################################################
     norm_g <- norm(c(grad[1], grad[2]), type="2")
     count <-  count + 1
@@ -96,9 +91,37 @@ steepest_descent <- function(func, x0) {
   cat("Iterations: ", count, "\n")
   cat("Optimal value: ", xk)
 }
+```
 
-steepest_descent(rosenbrock, x0)
+### Applying steepest descent with forward auto diff on rosenbrock function
+```{r}
+# make a contour plot
+x1 <- seq(0.9, 1.3, length.out=100)
+x2 <- x1
+z <- outer(x1, x2,FUN=rosenbrock)
+plot_contour <- contour(x1, x2, z, nlevels=50, 
+                        main="Contour Plot of Rosenbrock Function - Steepest Descent")
+steepest_descent(rosenbrock, x0, 1)
 # plot optimal solution
 points(1,1, col="green", pch=16)
 ```
 
+### Applying steepest descent with forward auto diff on function A4
+```{r}
+# make a contour plot
+x1 <- seq(-5, 15, length.out=100)
+x2 <- x1
+z <- outer(x1, x2,FUN=function_a4)
+plot_contour <- contour(x1, x2, z, nlevels=50, 
+                        main="Contour Plot of Function A4 - Steepest Descent")
+
+# perform steepest descent with various starting points
+steepest_descent(function_a4, c(0, 6.1), 2)
+steepest_descent(function_a4, c(0, 5.9), 2)
+steepest_descent(function_a4, c(6.5, 13), 2)
+# find the function value for each optimal solution found
+function_a4(-3.141592, 12.275)
+function_a4(3.141593, 2.275)
+function_a4(9.424778, 2.475)
+points(-10,-10) # used to display plot as final output
+```
