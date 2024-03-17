@@ -4,7 +4,7 @@ import math
 
 pi = math.pi
 
-class Var:
+class Var: # Contains 
     def __init__(self, val, der):
         self.val = val
         self.der = der
