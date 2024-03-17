@@ -161,6 +161,17 @@ def compute_grad(vars):
         vars[i].der = 0
     return grad
 
+def funct_a4(x, y):
+    return (y-(5.1*x**2)/(4*pi**2) + (5*x)/pi-6)**2 + 10*(1-1/(8*pi))*cos(x) + 10 
+
+def compute_grad_a4(vars):
+    grad = [0] * len(vars) 
+    for i in range(len(vars)):
+        vars[i].der = 1
+        grad[i] = funct_a4(*vars).der
+        vars[i].der = 0
+    return grad    
+
 def main():
      x = Var(3, 1)
      y = Var(5, 0)
