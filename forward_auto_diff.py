@@ -3,6 +3,7 @@
 import math
 
 pi = math.pi
+e = math.e
 
 class Var: # Contains 
     def __init__(self, val, der):
